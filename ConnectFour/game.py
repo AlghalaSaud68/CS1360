@@ -1,6 +1,6 @@
 import random
 
-lettersChoice = ["0","1","2","3","4","5","6"]
+colChoice = ["0","1","2","3","4","5","6"]
 gameGrid=[["","","","","","",""],
           ["","","","","","",""],
           ["","","","","","",""],
@@ -25,9 +25,6 @@ def isFull(gameGrid):
             if gameGrid[r][c] == "":
                 return False
     return True
-
-def placeToken(chosenSpace, turn):
-    gameGrid[chosenSpace[0]][chosenSpace[1]] = turn
 
 def checkWinner(token):
     vertwin=False
@@ -58,3 +55,40 @@ def checkWinner(token):
                 print("\nGame over! \nCongrats ", token, " has won!👑", )
                 return True
     return False
+
+def validCol(userCol):
+    userCol = userCol.strip()
+    if  userCol not in colChoice or not userCol.isdigit():
+        print("\nInvalid column choice. Please choose from 0 to 6")
+        return False
+    count = 0
+    colIndex= int(userCol)
+    for r in range(rows):
+        if gameGrid[r][colIndex] == "":
+            count+=1
+    if count == 0:
+        print(userCol, "is full")
+        return False
+    else:
+        return True
+
+def validMove(userMove):
+    if isFull(gameGrid):
+        print(" the grid is full, no valid moves available")
+        return False
+    userMove = userMove.strip()
+    isValid = validCol(userMove)
+    if isValid:
+        return True
+    else:
+        return False
+
+def dropGravity(userMove, turn):
+    isValid=validMove(userMove)
+    if not isValid:
+        return False
+    userMove = int(userMove)
+    for r in range(rows -1,-1,-1):
+        if gameGrid[r][userMove] == "":
+            gameGrid[r][userMove] = turn
+            return True
