@@ -1,14 +1,7 @@
-import random
-
-colChoice = ["0","1","2","3","4","5","6"]
-gameGrid=[["","","","","","",""],
-          ["","","","","","",""],
-          ["","","","","","",""],
-          ["","","","","","",""],
-          ["","","","","","",""],
-          ["","","","","","",""]]
 rows=6
 cols=7
+gameGrid = [["" for c in range(cols)] for r in range(rows)]
+colChoice = [str(c) for c in range(cols)]
 
 def printGrid():
     print("\n     0     1     2     3     4     5     6", end="")
@@ -16,10 +9,13 @@ def printGrid():
         print("\n   +-----+-----+-----+-----+-----+-----+-----+")
         print(i, " |", end="")
         for j in range(cols):
-            print(gameGrid[i][j], end="     |")
+            if gameGrid[i][j] == "":
+                print(gameGrid[i][j], end="     |")
+            else:
+                print(" ",gameGrid[i][j], end=" |")
     print("\n   +-----+-----+-----+-----+-----+-----+-----+")
 
-def isFull(gameGrid):
+def isFull():
     for r in range(rows):
         for c in range(cols):
             if gameGrid[r][c] == "":
@@ -27,32 +23,29 @@ def isFull(gameGrid):
     return True
 
 def checkWinner(token):
-    vertwin=False
-    horswin=False
-    diwin=False
     #Check horizontal winner
     for r in range(rows):
         for c in range(cols-3):
             if gameGrid[r][c] == token and gameGrid[r][c+1] == token and gameGrid[r][c+2] == token and gameGrid[r][c+3] == token:
-                print("\nGame over! \nCongrats ",token," has won!👑",)
+                print("\nGame over! \nCongrats ",token," has won!👑:)",)
                 return True
     #Check vertical winner
     for c in range(cols):
         for r in range(rows-3):
             if gameGrid[r][c] == token and gameGrid[r+1][c] == token and gameGrid[r+2][c] == token and gameGrid[r+3][c] == token:
-                print("\nGame over! \nCongrats ",token," has won!👑",)
+                print("\nGame over! \nCongrats ",token," has won!👑:)",)
                 return True
     #Check for digonal winner upper left to lower right
     for c in range(cols-3):
         for r in range(rows - 3):
             if gameGrid[r][c] == token and gameGrid[r + 1][c+1] == token and gameGrid[r + 2][c+2] == token and gameGrid[r + 3][c+3] == token:
-                print("\nGame over! \nCongrats ", token, " has won!👑", )
+                print("\nGame over! \nCongrats ", token, " has won!👑:)", )
                 return True
     # Check for digonal winner lower left to upper right
     for c in range(cols - 3):
         for r in range(3,rows):
             if gameGrid[r][c] == token and gameGrid[r - 1][c + 1] == token and gameGrid[r - 2][c + 2] == token and gameGrid[r - 3][c + 3] == token:
-                print("\nGame over! \nCongrats ", token, " has won!👑", )
+                print("\nGame over! \nCongrats ", token, " has won!👑:)", )
                 return True
     return False
 
@@ -73,7 +66,7 @@ def validCol(userCol):
         return True
 
 def validMove(userMove):
-    if isFull(gameGrid):
+    if isFull():
         print(" the grid is full, no valid moves available")
         return False
     userMove = userMove.strip()
@@ -92,3 +85,61 @@ def dropGravity(userMove, turn):
         if gameGrid[r][userMove] == "":
             gameGrid[r][userMove] = turn
             return True
+
+def emptyGrid():
+        for r in range(rows):
+            for c in range(cols):
+                gameGrid[r][c] = ""
+
+def restartGame(wantRestart):
+    if wantRestart:
+        print("\nRestarting game")
+        emptyGrid()
+    else:
+        print("the game is over. \nThank you for playing")
+#*****Dummy method for testing only
+def fillGrid():
+    for r in range(rows):
+        for c in range(cols):
+            gameGrid[r][c] = "❤️"
+
+def playGame():
+    playing = True
+    tokens=["❤️","💛"]
+    while playing:
+        printGrid()
+        winnerFound=False
+        turn = 0
+        while not isFull():
+            print("It is ",tokens[turn]," turn!\npick a column:)")
+            userCol=input()
+            userCol = userCol.strip()
+            while True:
+                    if not userCol.isdigit() or not userCol in colChoice:
+                        print("Invalid column choice. Please choose from 0 to 6")
+                        userCol = input()
+                        userCol = userCol.strip()
+                        continue
+                    if not dropGravity(userCol, tokens[turn]):
+                        print("Choose another column")
+                        userCol = input().strip()
+                        continue
+                    break
+            printGrid()
+            winnerFound=checkWinner(tokens[turn])
+            if winnerFound:
+                break
+            turn= 1 -turn
+        if not winnerFound and isFull():
+         print("Game Over!\n Tied! no player has won:(")
+
+        print("Do both players want to play again? \nY-for yes \nN-for no")
+        playersChoice=input()
+        playersChoice = playersChoice.lower().strip()
+        while playersChoice not in ["yes","no"]:
+            print("Invalid player choice. Please right yes or no")
+            playersChoice = input()
+            playersChoice = playersChoice.lower().strip()
+
+        playing= playersChoice == "yes"
+        restartGame(playing)
