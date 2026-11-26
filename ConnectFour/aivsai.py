@@ -9,9 +9,13 @@ def makePlayer(name, playerType, value):
 def getMove(player, board, token):
     if player["type"] == "mcts":
         return mctsMove(board, token, player["value"])
+    #Alpha-Beta will be added here:
+    #if player["type"] == "alphabeta":
+    #    return alphaBetaMove(board, token, player["value"])
     return -1
 
 def playMatch(firstPlayer, secondPlayer, show=False, maxSeconds=1800):
+    #Plays one full game, the maximum time is 30 minutes (1800 seconds)
     board = [["" for c in range(7)] for r in range(6)]
     players = [firstPlayer, secondPlayer]
     times = [0, 0]
@@ -55,6 +59,7 @@ def runExperiment(playerA, playerB, games, fileName="results.csv"):
     movesB = 0
 
     for g in range(games):
+        #A and B take turns in playing first
         if g % 2 == 0:
             r = playMatch(playerA, playerB)
             idxA = 0
@@ -89,6 +94,7 @@ def runExperiment(playerA, playerB, games, fileName="results.csv"):
     print("   avg moves", round(avgMoves, 1), "| avg game time", round(avgGameTime, 2), "s",
           "| avg time per move: A", round(avgMoveA, 4), "s, B", round(avgMoveB, 4), "s")
 
+    #Save the results in a csv file
     newFile = not os.path.exists(fileName)
     f = open(fileName, "a")
     if newFile:
