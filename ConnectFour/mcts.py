@@ -25,6 +25,7 @@ def isTerminalNode(node):
     return checkWinner(node["board"], node["mover"]) or isFull(node["board"])
 
 def ucb1Score(child, parentVisits, c):
+    #UCB1 = wins/visits + c * sqrt(ln(parent visits) / visits)
     average = child["wins"] / child["visits"]
     curiosity = c * math.sqrt(math.log(parentVisits) / child["visits"])
     return average + curiosity
@@ -40,6 +41,7 @@ def pickBestChild(node, c):
     return bestChild
 
 def randomGame(board, lastMover):
+    #Play random moves on a copy of the board until the game ends
     board = copyBoard(board)
     if checkWinner(board, lastMover):
         return lastMover
@@ -66,9 +68,11 @@ def mctsMove(board, token, simulations=1000, c=1.41):
     for i in range(simulations):
         node = root
 
+        #1-Selection
         while len(node["untried"]) == 0 and len(node["children"]) > 0 and not isTerminalNode(node):
             node = pickBestChild(node, c)
 
+        #2-Expansion
         if len(node["untried"]) > 0 and not isTerminalNode(node):
             col = random.choice(node["untried"])
             node["untried"].remove(col)
@@ -79,8 +83,10 @@ def mctsMove(board, token, simulations=1000, c=1.41):
             node["children"].append(child)
             node = child
 
+        #3-Simulation
         winner = randomGame(node["board"], node["mover"])
 
+        #4-Backpropagation (win = 1, draw = 0.5, loss = 0)
         while node is not None:
             node["visits"] += 1
             if winner is None:
@@ -89,6 +95,7 @@ def mctsMove(board, token, simulations=1000, c=1.41):
                 node["wins"] += 1
             node = node["parent"]
 
+    #The final move is the child with the most visits
     bestChild = root["children"][0]
     for child in root["children"]:
         if child["visits"] > bestChild["visits"]:
