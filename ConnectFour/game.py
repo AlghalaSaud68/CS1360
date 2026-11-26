@@ -110,13 +110,8 @@ def isGameOver(board):
     return checkWinner(board,tokens[0]) or checkWinner(board,tokens[1]) or isFull(board)
 
 def getAIMove(board,token):
-    validCols = getvalidCol(board)
-    if not validCols:
-        return -1
-    move = random.choice(validCols)
-    if str(move) not in colChoice or board[0][move] != "":
-        return validCols[0]
-    return move
+    from mcts import mctsMove
+    return mctsMove(board,token,1000)
 
 def choseMode():
     print("Choose mode:\n1-Human vs Human\n2-Human vs AI\n3-AI vs AI")
