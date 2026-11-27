@@ -1,4 +1,5 @@
 import random
+import time
 
 rows=6
 cols=7
@@ -6,6 +7,7 @@ gameGrid = [["" for c in range(cols)] for r in range(rows)]
 colChoice = [str(c) for c in range(cols)]
 tokens=["❤️","💛"]
 playerTypes=["Human","Human"]
+aiSetting=[None,None]
 
 def printGrid(board):
     print("\n     0     1     2     3     4     5     6", end="")
@@ -109,9 +111,13 @@ def undoMove(board,userMove):
 def isGameOver(board):
     return checkWinner(board,tokens[0]) or checkWinner(board,tokens[1]) or isFull(board)
 
-def getAIMove(board,token):
-    from mcts import mctsMove
-    return mctsMove(board,token,1000)
+def getAIMove(board,token,set):
+    if set["type"]=="Alphabeta":
+        from alphabeta import getAlphaBetaMove
+        return getAlphaBetaMove(board,token,set["depth"])
+    else:
+        from mcts import mctsMove
+        return mctsMove(board,token,set["simulations"])
 
 def choseMode():
     print("Choose mode:\n1-Human vs Human\n2-Human vs AI\n3-AI vs AI")
@@ -124,6 +130,27 @@ def choseMode():
     if choice == "2":
         return ["Human","AI"]
     return ["AI","AI"]
+
+def choseAI(token):
+    print("Choose AI for",token,":\n1-Alphabeta\n2-MCTS")
+    choice = input().strip()
+    while choice not in ["1","2"]:
+        print("Invalid choice. Please choose 1 or 2")
+        choice = input().strip()
+    if choice == "1":
+        print("choose depth for Alphabeta :2 ,6 or 10")
+        depth = input().strip()
+        while depth not in ["2","6","10"]:
+            print("Invalid choice. Please choose 2, 6 or 10")
+            depth = input().strip()
+        return {"type":"Alphabeta","depth":int(depth)}
+    else:
+        print("choose number of simulations for MCTS :100 ,1000 or 2000")
+        s=input().strip()
+        while s not in ["100","1000","2000"]:
+            print("Invalid choice. Please choose 100, 1000 or 2000")
+            s = input().strip()
+        return {"type":"MCTS","simulations":int(s)}
 
 def emptyGrid(board):
         for r in range(rows):
@@ -141,13 +168,18 @@ def playGame(board):
     playing = True
     while playing:
         playerTypes[:] = choseMode()
+        for i in range(2):
+            if playerTypes[i]=="AI":
+                aiSetting[i] = choseAI(tokens[i])
         printGrid(board)
         winnerFound=False
         turn = 0
         while not isFull(board):
             print("It is ",tokens[turn]," turn!")
             if playerTypes[turn] == "AI":
-                aiCol=getAIMove(board,tokens[turn])
+                start = time.perf_counter()
+                aiCol=getAIMove(board,tokens[turn],aiSetting[turn])
+                elapsed = time.perf_counter()-start
                 if not dropGravity(board,aiCol,tokens[turn]):
                     aiCol=getvalidCol(board)[0]
                     dropGravity(board,aiCol,tokens[turn])

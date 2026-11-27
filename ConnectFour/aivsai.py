@@ -2,6 +2,7 @@ import time
 import os
 from game import tokens, makeMove, checkWinner, isFull, printGrid
 from mcts import mctsMove
+from alphabeta import getAlphaBetaMove
 
 def makePlayer(name, playerType, value):
     return {"name": name, "type": playerType, "value": value}
@@ -9,10 +10,9 @@ def makePlayer(name, playerType, value):
 def getMove(player, board, token):
     if player["type"] == "mcts":
         return mctsMove(board, token, player["value"])
-    #Alpha-Beta will be added here:
-    #if player["type"] == "alphabeta":
-    #    return alphaBetaMove(board, token, player["value"])
-    return -1
+    if player["type"] == "alphabeta":
+        return getAlphaBetaMove(board, token, player["value"])
+    raise ValueError("Unknown player type: " + player["type"])
 
 def playMatch(firstPlayer, secondPlayer, show=False, maxSeconds=1800):
     #Plays one full game, the maximum time is 30 minutes (1800 seconds)
