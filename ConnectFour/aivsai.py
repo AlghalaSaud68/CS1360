@@ -109,7 +109,7 @@ if __name__ == "__main__":
     mcts1000 = makePlayer("MCTS 1000", "mcts", 1000)
     mcts2000 = makePlayer("MCTS 2000", "mcts", 2000)
 
-    numberOfGames = 10
+    numberOfGames = 50
     runExperiment(mcts100, mcts100, numberOfGames)
     runExperiment(mcts1000, mcts1000, numberOfGames)
     runExperiment(mcts2000, mcts2000, numberOfGames)
