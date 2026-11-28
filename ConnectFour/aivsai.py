@@ -103,3 +103,16 @@ def runExperiment(playerA, playerB, games, fileName="results.csv"):
             str(winsB) + "," + str(draws) + "," + str(timeouts) + "," + str(round(avgMoves, 1)) + "," +
             str(round(avgGameTime, 2)) + "," + str(round(avgMoveA, 4)) + "," + str(round(avgMoveB, 4)) + "\n")
     f.close()
+
+if __name__ == "__main__":
+    mcts100 = makePlayer("MCTS 100", "mcts", 100)
+    mcts1000 = makePlayer("MCTS 1000", "mcts", 1000)
+    mcts2000 = makePlayer("MCTS 2000", "mcts", 2000)
+
+    numberOfGames = 50
+    runExperiment(mcts100, mcts100, numberOfGames)
+    runExperiment(mcts1000, mcts1000, numberOfGames)
+    runExperiment(mcts2000, mcts2000, numberOfGames)
+    runExperiment(mcts100, mcts1000, numberOfGames)
+    runExperiment(mcts100, mcts2000, numberOfGames)
+    runExperiment(mcts1000, mcts2000, numberOfGames)
